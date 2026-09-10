@@ -129,6 +129,35 @@ function getOrCreateFolder(parent, nombre) {
 }
 
 function getOrCreateSheet(nombrePestana, encabezados) {
+  // Dos envíos casi simultáneos (dos docentes a la vez) podrían, sin este candado,
+  // buscar la hoja al mismo tiempo, no encontrarla todavía y crear cada uno la suya.
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const ss = getOrCreateHojaRegistro();
+    let hoja = ss.getSheetByName(nombrePestana);
+    if (!hoja) {
+      hoja = ss.insertSheet(nombrePestana);
+      hoja.appendRow(encabezados);
+      hoja.setFrozenRows(1);
+      const hojaDefault = ss.getSheetByName('Hoja 1') || ss.getSheetByName('Sheet1');
+      if (hojaDefault && ss.getSheets().length > 1) ss.deleteSheet(hojaDefault);
+    }
+    return hoja;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function getOrCreateHojaRegistro() {
+  // Se guarda el ID en las Propiedades del script para no depender de una búsqueda
+  // por nombre en Drive (que puede tardar unos segundos en reflejar un archivo recién movido).
+  const props = PropertiesService.getScriptProperties();
+  const idGuardado = props.getProperty('HOJA_ID');
+  if (idGuardado) {
+    try { return SpreadsheetApp.openById(idGuardado); } catch (err) { /* el archivo ya no existe, se recrea abajo */ }
+  }
+
   const raiz = getOrCreateFolder(DriveApp.getRootFolder(), RAIZ_NOMBRE);
   const archivos = raiz.getFilesByName(HOJA_NOMBRE);
   let ss;
@@ -140,14 +169,7 @@ function getOrCreateSheet(nombrePestana, encabezados) {
     raiz.addFile(archivo);
     DriveApp.getRootFolder().removeFile(archivo);
   }
-
-  let hoja = ss.getSheetByName(nombrePestana);
-  if (!hoja) {
-    hoja = ss.insertSheet(nombrePestana);
-    hoja.appendRow(encabezados);
-    hoja.setFrozenRows(1);
-    const hojaDefault = ss.getSheetByName('Hoja 1') || ss.getSheetByName('Sheet1');
-    if (hojaDefault && ss.getSheets().length > 1) ss.deleteSheet(hojaDefault);
-  }
-  return hoja;
+  props.setProperty('HOJA_ID', ss.getId());
+  return ss;
 }
+
