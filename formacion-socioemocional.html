@@ -127,8 +127,8 @@
     <div class="card">
       <div class="card-title">👤 Identificación del docente</div>
       <div class="field">
-        <label>Apellido paterno y nombre</label>
-        <input type="text" id="docente" placeholder="Ej. Hernández Ibarra Luis Eduardo">
+        <label>Tu nombre completo</label>
+        <select id="docente"><option value="">— Selecciona tu nombre —</option></select>
       </div>
       <div class="field">
         <label>Grupo</label>
@@ -298,15 +298,60 @@ const SEMANAS = [
   {value:"2026-11-30", end:"2026-12-04", label:"Semana 14 · 30 nov – 4 dic"}
 ];
 
+const TUTORES = [
+  {id:1,  grupo:"2AMARH", aula:4,  nombre:"LIC. ROSARIO MORA MONROY"},
+  {id:2,  grupo:"2AMTSO", aula:1,  nombre:"LIC. BETTY CAMARGO APARICIO"},
+  {id:3,  grupo:"2AMARQ", aula:12, nombre:"ARQ. ALEJANDRO ARRIETA LÓPEZ"},
+  {id:4,  grupo:"2AMPRO", aula:9,  nombre:"ING. STEPHANY GARRIDO FLORES"},
+  {id:5,  grupo:"2AMELE", aula:7,  nombre:"ING. GREGORIO CUEVAS NERI"},
+  {id:6,  grupo:"2AVARH", aula:4,  nombre:"LIC. VICTOR HUGO CRUZ CONTRERAS"},
+  {id:7,  grupo:"2AVTSO", aula:1,  nombre:"LIC. LUCILA MENDOZA GONZALEZ"},
+  {id:8,  grupo:"2AVARQ", aula:12, nombre:"LIC. EDWIN CHOFO ORTEGA DE LA CRUZ"},
+  {id:9,  grupo:"2AVPRO", aula:9,  nombre:"ING. FLOR HERNANDEZ PADILLA"},
+  {id:10, grupo:"2AVMEC", aula:7,  nombre:"LIC. ESCUDERO RODRIGUEZ LUIS EDUARDO"},
+  {id:11, grupo:"2AVCIB", aula:19, nombre:"LIC. RODRIGO GUILLERMO HERNÁNDEZ ESCORZA"},
+  {id:12, grupo:"4AMARH", aula:5,  nombre:"LIC. ÁNGELES HERNÁNDEZ ELMA"},
+  {id:13, grupo:"4AMTSO", aula:2,  nombre:"LIC. MÓNICA ELENA GARCÍA OLVERA"},
+  {id:14, grupo:"4AMARQ", aula:16, nombre:"ING. JESSICA GISELA LÓPEZ ORTEGA"},
+  {id:15, grupo:"4AMPRO", aula:10, nombre:"MTRO. JORGE LUIS NERI TREJO"},
+  {id:16, grupo:"4AMELE", aula:15, nombre:"LIC. ALMA VIRIDIANA MARTINEZ GUZMAN"},
+  {id:17, grupo:"4AVARH", aula:5,  nombre:"LIC. IMELDA GÓMEZ JIMÉNEZ"},
+  {id:18, grupo:"4AVTSO", aula:2,  nombre:"LIC. LILIANA DÍAZ TENORIO"},
+  {id:19, grupo:"4AVARQ", aula:16, nombre:"LIC. JOSE PABLO OZORNIO SUAREZ"},
+  {id:20, grupo:"4AVPRO", aula:10, nombre:"LIC. GUILLERMO MIRANDA FLORES"},
+  {id:21, grupo:"4AVMEC", aula:15, nombre:"MTRA. PATRICIA SIMÓN BASTIDA"},
+  {id:22, grupo:"6AMARH", aula:6,  nombre:"LIC. MARITZA GUTIERREZ CORTES"},
+  {id:23, grupo:"6AMTSO", aula:3,  nombre:"LIC. JUANA INES ALANÍS BETANCOURT"},
+  {id:24, grupo:"6AMARQ", aula:17, nombre:"LIC. MA. ANGELINA ROBLEDO GODINEZ"},
+  {id:25, grupo:"6AMPRO", aula:11, nombre:"ING. PEÑA FLORES MARIO ULISES"},
+  {id:26, grupo:"6AMELE", aula:14, nombre:"LIC. FATIMA JUDITH VAZQUEZ ROMERO"},
+  {id:27, grupo:"6AVARH", aula:6,  nombre:"LIC. AMALIA ZOBEYDAH FLORES BARRERA"},
+  {id:28, grupo:"6AVTSO", aula:3,  nombre:"LIC. ANGELICA MARIA SANCHEZ CERON"},
+  {id:29, grupo:"6AVARQ", aula:17, nombre:"LIC. MARÍA SOLEDAD MACEDO"},
+  {id:30, grupo:"6AVPRO", aula:11, nombre:"LIC. LUIS EDUARDO IBARRA HERNANDEZ"},
+  {id:31, grupo:"6AVMEC", aula:14, nombre:"LIC. JUAN CARLOS ORTEGA ROMERO"},
+];
+
 let photos = {1:null, 2:null};
 let pasoActual = 1;
 
 (function init(){
+  poblarDocentes();
   poblarSemanas();
   document.querySelectorAll('input[name=grado]').forEach(r => r.addEventListener('change', poblarActividades));
   document.getElementById('actividad').addEventListener('change', mostrarDescActividad);
   cargarDocenteGuardado();
 })();
+
+function poblarDocentes(){
+  const sel = document.getElementById('docente');
+  TUTORES.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t.id;
+    o.textContent = t.nombre;
+    sel.appendChild(o);
+  });
+}
 
 function poblarSemanas(){
   const sel = document.getElementById('semana');
@@ -325,7 +370,7 @@ function cargarDocenteGuardado(){
   try{
     const guardado = JSON.parse(localStorage.getItem('fs_docente') || 'null');
     if(!guardado) return;
-    if(guardado.docenteNombre) document.getElementById('docente').value = guardado.docenteNombre;
+    if(guardado.docenteId) document.getElementById('docente').value = guardado.docenteId;
     if(guardado.grupo) document.getElementById('grupo').value = guardado.grupo;
     if(guardado.grado){
       const radio = document.querySelector(`input[name=grado][value="${guardado.grado}"]`);
@@ -334,9 +379,9 @@ function cargarDocenteGuardado(){
   }catch(err){ /* localStorage no disponible, se ignora */ }
 }
 
-function guardarDocenteLocal(docenteNombre, grupo, grado){
+function guardarDocenteLocal(docenteId, grupo, grado){
   try{
-    localStorage.setItem('fs_docente', JSON.stringify({docenteNombre, grupo, grado}));
+    localStorage.setItem('fs_docente', JSON.stringify({docenteId, grupo, grado}));
   }catch(err){ /* localStorage no disponible, se ignora */ }
 }
 
@@ -381,7 +426,7 @@ function irPaso(n) {
 
 function validarPaso(n) {
   if(n===1){
-    if(!document.getElementById('docente').value.trim()){ alert('Escribe tu apellido paterno y nombre.'); return false; }
+    if(!document.getElementById('docente').value){ alert('Selecciona tu nombre.'); return false; }
     if(!document.getElementById('grupo').value.trim()){ alert('Indica el grupo.'); return false; }
     if(!document.getElementById('semana').value){ alert('Indica la semana de la actividad.'); return false; }
     if(!document.querySelector('input[name=grado]:checked')){ alert('Selecciona el semestre y ámbito.'); return false; }
@@ -419,7 +464,8 @@ async function enviar(){
   const banner=document.getElementById('error-banner'); banner.style.display='none';
   if(!photos[1]||!photos[2]){ banner.textContent='⚠️ Debes subir las 2 fotografías antes de enviar.'; banner.style.display='block'; return; }
 
-  const docenteNombre=document.getElementById('docente').value.trim();
+  const docenteId=document.getElementById('docente').value;
+  const docenteNombre=TUTORES.find(t=>t.id==docenteId).nombre;
   const grupo=document.getElementById('grupo').value.trim();
   const semanaSel=document.getElementById('semana').value;
   const semanaInfo=SEMANAS.find(s=>s.value===semanaSel);
@@ -437,7 +483,7 @@ async function enviar(){
   // MODO DEMO si aún no se configuró la URL
   if(APPS_SCRIPT_URL==="PEGA_AQUI_LA_URL_DEL_SCRIPT"){
     await new Promise(r=>setTimeout(r,2000));
-    guardarDocenteLocal(docenteNombre, grupo, gradoEl.value);
+    guardarDocenteLocal(docenteId, grupo, gradoEl.value);
     mostrarExito({docenteNombre, grupo, info, actNum, actividadTitulo, semanaLabel}, fecha);
     btn.disabled=false; btn.textContent='Enviar evidencia ✓';
     return;
@@ -455,7 +501,7 @@ async function enviar(){
     const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(payload)});
     const json=await res.json();
     if(json.status==='ok'){
-      guardarDocenteLocal(docenteNombre, grupo, gradoEl.value);
+      guardarDocenteLocal(docenteId, grupo, gradoEl.value);
       mostrarExito({docenteNombre, grupo, info, actNum, actividadTitulo, semanaLabel}, fecha);
     }
     else throw new Error(json.mensaje||'Error desconocido');

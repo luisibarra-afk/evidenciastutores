@@ -397,7 +397,7 @@ let pasoActual = 1;
   TUTORES.forEach(t => {
     const o = document.createElement('option');
     o.value = t.id;
-    o.textContent = `${t.nombre} — ${t.grupo}`;
+    o.textContent = t.nombre;
     sel.appendChild(o);
   });
   poblarSemanas();
