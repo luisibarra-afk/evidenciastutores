@@ -156,7 +156,13 @@ function getOrCreateHojaRegistro() {
   const props = PropertiesService.getScriptProperties();
   const idGuardado = props.getProperty('HOJA_ID');
   if (idGuardado) {
-    try { return SpreadsheetApp.openById(idGuardado); } catch (err) { /* el archivo ya no existe, se recrea abajo */ }
+    try {
+      const archivo = DriveApp.getFileById(idGuardado);
+      // Si alguien la mandó a la papelera sin querer (por ejemplo, al limpiar duplicados),
+      // la restauramos en vez de seguir escribiendo en un archivo invisible para todos.
+      if (archivo.isTrashed()) archivo.setTrashed(false);
+      return SpreadsheetApp.open(archivo);
+    } catch (err) { /* el archivo ya no existe, se recrea abajo */ }
   }
 
   const raiz = getOrCreateFolder(DriveApp.getRootFolder(), RAIZ_NOMBRE);
