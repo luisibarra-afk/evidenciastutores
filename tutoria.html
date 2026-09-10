@@ -49,6 +49,11 @@
   select:focus, input:focus, textarea:focus { border-color: var(--accent); }
   textarea { resize: vertical; min-height: 120px; line-height: 1.55; }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .tema-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; }
+  .tema-card .t-unidad { font-size: .72rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--accent2); margin-bottom: .3rem; }
+  .tema-card .t-titulo { font-family: 'Playfair Display', serif; font-weight: 600; font-size: 1.05rem; color: var(--text); margin-bottom: .3rem; }
+  .tema-card .t-fuente { font-size: .78rem; color: var(--muted); }
   @media(max-width:500px){ .field-row { grid-template-columns: 1fr; } }
 
   .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -118,8 +123,8 @@
         <select id="docente"><option value="">— Selecciona tu nombre —</option></select>
       </div>
       <div class="field">
-        <label>Fecha de la tutoría</label>
-        <input type="date" id="fecha">
+        <label>Semana de la tutoría</label>
+        <select id="semana"></select>
       </div>
       <div class="field">
         <label>Grupo</label>
@@ -134,10 +139,10 @@
   <!-- PASO 2 -->
   <div id="page-2" style="display:none">
     <div class="card">
-      <div class="card-title">📝 Descripción de la actividad</div>
+      <div class="card-title">📝 Tema de la semana</div>
       <div class="field">
-        <label>Título de la actividad</label>
-        <input type="text" id="titulo" placeholder="Ej. Orientación vocacional y plan de vida">
+        <label>Tema a trabajar</label>
+        <div id="tema-semana" class="tema-card"></div>
       </div>
       <div class="field">
         <label>Descripción de la actividad</label>
@@ -235,6 +240,42 @@ const TUTORES = [
   {id:31, grupo:"6AVMEC", aula:14, nombre:"LIC. JUAN CARLOS ORTEGA ROMERO"},
 ];
 
+// Temario de "El ABC de las emociones" (SEP), dosificado 1 tema por semana
+// a partir de las Orientaciones para jóvenes y para docentes.
+const SEMANAS = [
+  {value:"2026-08-31", end:"2026-09-04", label:"Semana 1 · 31 ago – 4 sep"},
+  {value:"2026-09-07", end:"2026-09-11", label:"Semana 2 · 7 – 11 sep"},
+  {value:"2026-09-14", end:"2026-09-18", label:"Semana 3 · 14 – 18 sep"},
+  {value:"2026-09-21", end:"2026-09-25", label:"Semana 4 · 21 – 25 sep"},
+  {value:"2026-09-28", end:"2026-10-02", label:"Semana 5 · 28 sep – 2 oct"},
+  {value:"2026-10-05", end:"2026-10-09", label:"Semana 6 · 5 – 9 oct"},
+  {value:"2026-10-12", end:"2026-10-16", label:"Semana 7 · 12 – 16 oct"},
+  {value:"2026-10-19", end:"2026-10-23", label:"Semana 8 · 19 – 23 oct"},
+  {value:"2026-10-26", end:"2026-10-30", label:"Semana 9 · 26 – 30 oct"},
+  {value:"2026-11-02", end:"2026-11-06", label:"Semana 10 · 2 – 6 nov"},
+  {value:"2026-11-09", end:"2026-11-13", label:"Semana 11 · 9 – 13 nov"},
+  {value:"2026-11-16", end:"2026-11-20", label:"Semana 12 · 16 – 20 nov"},
+  {value:"2026-11-23", end:"2026-11-27", label:"Semana 13 · 23 – 27 nov"},
+  {value:"2026-11-30", end:"2026-12-04", label:"Semana 14 · 30 nov – 4 dic"}
+];
+
+const TEMARIO = [
+  {unidad:"Unidad 1 · Salud mental, ¿qué es eso?", titulo:"Semáforo de las emociones", fuente:"Orientaciones para jóvenes"},
+  {unidad:"Unidad 1 · Salud mental, ¿qué es eso?", titulo:"Diario breve de emociones", fuente:"Orientaciones para jóvenes"},
+  {unidad:"Unidad 1 · ¿Qué es la salud mental?", titulo:"Estereotipos de género", fuente:"Orientaciones para docentes"},
+  {unidad:"Unidad 2 · Cuidarnos y acompañar a otras personas", titulo:"Un respiro", fuente:"Orientaciones para docentes"},
+  {unidad:"Unidad 2 · Cuidarnos y cuidar a otras personas", titulo:"5 sentidos y 5 cosas + Respiración 4-7-8", fuente:"Orientaciones para jóvenes"},
+  {unidad:"Unidad 2 · Cuidarnos y acompañar a otras personas", titulo:"Aula que escucha, aula que cuida", fuente:"Orientaciones para docentes"},
+  {unidad:"Unidad 2 · Cuidarnos y cuidar a otras personas", titulo:"Pensar nuestro camino", fuente:"Orientaciones para jóvenes"},
+  {unidad:"Unidad 3 · ¿Cómo vivimos y sentimos el mundo virtual?", titulo:"¿Cómo nos hacen sentir las redes sociales?", fuente:"Orientaciones para jóvenes"},
+  {unidad:"Unidad 3 · Uso de las tecnologías digitales", titulo:"Análisis de caso: Ciberacoso", fuente:"Orientaciones para docentes"},
+  {unidad:"Unidad 3 · Uso de las tecnologías digitales", titulo:"Reflexionemos sobre la discriminación", fuente:"Orientaciones para docentes"},
+  {unidad:"Unidad 3 · Uso de las tecnologías digitales", titulo:"Análisis de caso: Ana e Iván", fuente:"Orientaciones para docentes"},
+  {unidad:"Unidad 4 · De lo que sentimos a lo que transformamos", titulo:"Lo que sentimos también transforma", fuente:"Orientaciones para jóvenes"},
+  {unidad:"Unidad 4 · Estrategias para la participación y el bienestar", titulo:"Análisis de caso: Cuando etiquetamos, también limitamos", fuente:"Orientaciones para docentes"},
+  {unidad:"Unidad 4 · Estrategias para la participación y el bienestar", titulo:"Explorando el proyecto de vida en el aula", fuente:"Orientaciones para docentes"}
+];
+
 let photos = {1:null, 2:null};
 let pasoActual = 1;
 
@@ -246,7 +287,7 @@ let pasoActual = 1;
     o.textContent = `${t.nombre} — ${t.grupo}`;
     sel.appendChild(o);
   });
-  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  poblarSemanas();
   document.getElementById('docente').addEventListener('change', function(){
     const t = TUTORES.find(x => x.id == this.value);
     document.getElementById('grupo').value = t ? t.grupo : '';
@@ -261,12 +302,35 @@ let pasoActual = 1;
   }catch(err){ /* localStorage no disponible, se ignora */ }
 })();
 
+function poblarSemanas(){
+  const sel = document.getElementById('semana');
+  const hoy = new Date().toISOString().split('T')[0];
+  let actual = SEMANAS.find(s => hoy <= s.end) || SEMANAS[SEMANAS.length - 1];
+  SEMANAS.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.value;
+    o.textContent = s.label;
+    sel.appendChild(o);
+  });
+  sel.value = actual.value;
+}
+
+function mostrarTema(){
+  const idx = SEMANAS.findIndex(s => s.value === document.getElementById('semana').value);
+  const tema = TEMARIO[idx];
+  document.getElementById('tema-semana').innerHTML =
+    `<div class="t-unidad">${tema.unidad}</div>`+
+    `<div class="t-titulo">${tema.titulo}</div>`+
+    `<div class="t-fuente">📘 ${tema.fuente} — El ABC de las emociones (SEP)</div>`;
+}
+
 function guardarDocenteLocal(id){
   try{ localStorage.setItem('tutoria_docente_id', id); }catch(err){ /* localStorage no disponible, se ignora */ }
 }
 
 function irPaso(n) {
   if(n > pasoActual && !validarPaso(pasoActual)) return;
+  if(n===2) mostrarTema();
   pasoActual = n;
   [1,2,3].forEach(i => {
     document.getElementById('page-'+i).style.display = i===n ? 'block' : 'none';
@@ -280,10 +344,9 @@ function irPaso(n) {
 function validarPaso(n) {
   if(n===1){
     if(!document.getElementById('docente').value){ alert('Selecciona tu nombre.'); return false; }
-    if(!document.getElementById('fecha').value){ alert('Indica la fecha de la tutoría.'); return false; }
+    if(!document.getElementById('semana').value){ alert('Indica la semana de la tutoría.'); return false; }
   }
   if(n===2){
-    if(!document.getElementById('titulo').value.trim()){ alert('Escribe el título de la actividad.'); return false; }
     if(!document.getElementById('descripcion').value.trim()){ alert('Escribe la descripción de la actividad.'); return false; }
   }
   return true;
@@ -318,8 +381,11 @@ async function enviar(){
 
   const tutorId=document.getElementById('docente').value;
   const tutor=TUTORES.find(t=>t.id==tutorId);
-  const fecha=document.getElementById('fecha').value;
-  const titulo=document.getElementById('titulo').value.trim();
+  const semanaIdx=SEMANAS.findIndex(s=>s.value===document.getElementById('semana').value);
+  const fecha=SEMANAS[semanaIdx].value;
+  const semanaLabel=SEMANAS[semanaIdx].label;
+  const tema=TEMARIO[semanaIdx];
+  const titulo=tema.titulo;
   const descripcion=document.getElementById('descripcion').value.trim();
 
   const btn=document.getElementById('btn-enviar');
@@ -329,18 +395,18 @@ async function enviar(){
   if(APPS_SCRIPT_URL==="PEGA_AQUI_LA_URL_DEL_SCRIPT"){
     await new Promise(r=>setTimeout(r,2000));
     guardarDocenteLocal(tutorId);
-    mostrarExito(tutor,fecha);
+    mostrarExito(tutor,fecha,{semanaLabel,tema});
     btn.disabled=false; btn.textContent='Enviar evidencia ✓';
     return;
   }
 
   try{
-    const payload={ programa:'TutoriaABC', tutorNombre:tutor.nombre, tutorGrupo:tutor.grupo, tutorAula:tutor.aula, fecha, titulo, descripcion, foto1:photos[1], foto2:photos[2] };
+    const payload={ programa:'TutoriaABC', tutorNombre:tutor.nombre, tutorGrupo:tutor.grupo, tutorAula:tutor.aula, fecha, semanaLabel, titulo, unidad:tema.unidad, descripcion, foto1:photos[1], foto2:photos[2] };
     const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(payload)});
     const json=await res.json();
     if(json.status==='ok'){
       guardarDocenteLocal(tutorId);
-      mostrarExito(tutor,fecha);
+      mostrarExito(tutor,fecha,{semanaLabel,tema});
     }
     else throw new Error(json.mensaje||'Error desconocido');
   }catch(err){
@@ -351,13 +417,13 @@ async function enviar(){
   }
 }
 
-function mostrarExito(tutor,fecha){
+function mostrarExito(tutor,fecha,info){
   [1,2,3].forEach(i=>document.getElementById('page-'+i).style.display='none');
   document.getElementById('steps-bar').style.display='none';
   document.getElementById('drive-path-display').innerHTML=
     `📁 Tutoría ABC de las Emociones<br>`+
     `&nbsp;&nbsp;📁 ${tutor.nombre} (${tutor.grupo})<br>`+
-    `&nbsp;&nbsp;&nbsp;&nbsp;📁 ${fecha}<br>`+
+    `&nbsp;&nbsp;&nbsp;&nbsp;📁 ${info.semanaLabel} — ${info.tema.titulo}<br>`+
     `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼 foto1_${fecha}.jpg<br>`+
     `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼 foto2_${fecha}.jpg<br>`+
     `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📄 evidencia_${fecha}.txt`;
@@ -368,8 +434,7 @@ function mostrarExito(tutor,fecha){
 function nuevaEvidencia(){
   // El docente y grupo se mantienen: es lo más probable para la siguiente sesión de la misma persona.
   photos={1:null,2:null};
-  ['titulo','descripcion'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('fecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('descripcion').value='';
   [1,2].forEach(n=>{const d=document.getElementById('drop'+n);const img=d.querySelector('.preview');if(img)img.remove();document.getElementById('file'+n).value='';d.classList.remove('has-img');});
   document.getElementById('success-view').style.display='none';
   document.getElementById('steps-bar').style.display='flex';

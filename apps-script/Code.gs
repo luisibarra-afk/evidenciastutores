@@ -57,26 +57,27 @@ function guardarTutoriaABC(data) {
   const raiz = getOrCreateFolder(DriveApp.getRootFolder(), RAIZ_NOMBRE);
   const progFolder = getOrCreateFolder(raiz, 'Tutoría ABC de las Emociones');
   const docenteFolder = getOrCreateFolder(progFolder, `${data.tutorNombre} (${data.tutorGrupo})`);
-  const fechaFolder = getOrCreateFolder(docenteFolder, data.fecha);
+  const semanaFolder = getOrCreateFolder(docenteFolder, `${data.semanaLabel || data.fecha} - ${data.titulo || ''}`);
 
-  guardarFotosYTexto(fechaFolder, data.fecha, data.foto1, data.foto2,
+  guardarFotosYTexto(semanaFolder, data.fecha, data.foto1, data.foto2,
     `Tutoría ABC de las Emociones\n` +
     `Docente: ${data.tutorNombre}\n` +
     `Grupo: ${data.tutorGrupo}\n` +
     `Aula: ${data.tutorAula || ''}\n` +
-    `Fecha: ${data.fecha}\n` +
-    `Título: ${data.titulo || ''}\n\n` +
+    `Semana: ${data.semanaLabel || data.fecha}\n` +
+    `${data.unidad || ''}\n` +
+    `Tema: ${data.titulo || ''}\n\n` +
     `Descripción:\n${data.descripcion || ''}`);
 
   const hoja = getOrCreateSheet('Tutoria', [
-    'Fecha de registro', 'Docente', 'Grupo', 'Aula', 'Fecha de la sesión', 'Título', 'Descripción', 'Carpeta'
+    'Fecha de registro', 'Docente', 'Grupo', 'Aula', 'Semana', 'Unidad', 'Tema', 'Descripción', 'Carpeta'
   ]);
   hoja.appendRow([
-    new Date(), data.tutorNombre, data.tutorGrupo, data.tutorAula || '', data.fecha,
-    data.titulo || '', data.descripcion || '', fechaFolder.getUrl()
+    new Date(), data.tutorNombre, data.tutorGrupo, data.tutorAula || '', data.semanaLabel || data.fecha,
+    data.unidad || '', data.titulo || '', data.descripcion || '', semanaFolder.getUrl()
   ]);
 
-  return { folderUrl: fechaFolder.getUrl() };
+  return { folderUrl: semanaFolder.getUrl() };
 }
 
 function guardarFormacionSocioemocional(data) {
