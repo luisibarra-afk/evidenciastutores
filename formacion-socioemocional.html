@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formación Socioemocional — Feb–Jul 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbf8f4; --surface: #ffffff; --surface2: #f2f8f4;
+    --accent: #6dcba3; --accent2: #4bb98d; --text: #3f3a36;
+    --muted: #8a8580; --border: #e5efe8; --success: #4fb488;
+    --error: #d9636b; --radius: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 60% 40% at 80% 10%, rgba(109,203,163,.18) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 50% at 10% 80%, rgba(183,236,210,.25) 0%, transparent 55%);
+  }
+  .container { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 2.5rem 1.2rem 5rem; }
+
+  .back-link { display: inline-flex; align-items: center; gap: .35rem; color: var(--muted); text-decoration: none; font-size: .82rem; margin-bottom: 1.4rem; }
+  .back-link:hover { color: var(--text); }
+
+  header { text-align: center; margin-bottom: 2.5rem; }
+  .badge { display: inline-flex; align-items: center; gap: .4rem; background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #fff; font-size: .7rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; padding: .35rem 1rem; border-radius: 100px; margin-bottom: 1.2rem; }
+  h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,5vw,2.6rem); font-weight: 700; line-height: 1.15; color: var(--text); margin-bottom: .6rem; }
+  header p { color: var(--muted); font-size: .9rem; }
+
+  .steps { display: flex; align-items: center; margin-bottom: 2rem; background: var(--surface); border-radius: var(--radius); padding: .8rem 1.2rem; border: 1px solid var(--border); }
+  .step { display: flex; align-items: center; gap: .5rem; flex: 1; }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 500; background: var(--surface2); color: var(--muted); flex-shrink: 0; transition: all .3s; }
+  .step-label { font-size: .75rem; color: var(--muted); transition: color .3s; white-space: nowrap; }
+  .step.active .step-num { background: var(--accent); color: #fff; }
+  .step.active .step-label { color: var(--text); }
+  .step.done .step-num { background: var(--success); color: #fff; }
+  .step-line { height: 1px; flex: 1; background: var(--border); margin: 0 .6rem; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.8rem 2rem; animation: fadeUp .35s ease both; box-shadow: 0 2px 0 rgba(0,0,0,.02); }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 1.4rem; color: #379269; }
+
+  .field { margin-bottom: 1.2rem; }
+  label { display: block; font-size: .75rem; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-bottom: .45rem; }
+  .hint { font-size: .78rem; color: var(--muted); margin-top: .4rem; }
+  select, input[type=text], input[type=date], textarea { width: 100%; min-width: 0; box-sizing: border-box; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: .95rem; padding: .75rem 1rem; outline: none; transition: border-color .2s; }
+  input[type=date] { -webkit-appearance: none; appearance: none; font-size: .85rem; padding: .75rem .7rem; }
+  select:focus, input:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.55; }
+  select option { background: #fff; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:500px){ .field-row { grid-template-columns: 1fr; } }
+
+  .grado-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin-bottom: 1.2rem; }
+  .grado-opt { position: relative; }
+  .grado-opt input { position: absolute; opacity: 0; inset: 0; cursor: pointer; margin: 0; }
+  .grado-card { border: 2px solid var(--border); border-radius: 10px; padding: .9rem 1rem; background: var(--surface2); transition: all .15s; }
+  .grado-opt input:checked + .grado-card { border-color: var(--accent); background: #eafbf3; }
+  .grado-card .g-num { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2rem; color: var(--text); }
+  .grado-card .g-name { font-size: .75rem; color: var(--muted); margin-top: .15rem; line-height: 1.4; }
+
+  .activity-desc { margin-top: .8rem; font-size: .82rem; color: var(--muted); background: var(--surface2); border-radius: 8px; padding: .7rem .9rem; display: none; line-height: 1.5; }
+  .activity-desc.show { display: block; }
+
+  .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .photo-drop { border: 2px dashed var(--border); border-radius: 10px; aspect-ratio: 4/3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; cursor: pointer; transition: all .2s; position: relative; overflow: hidden; background: var(--surface2); }
+  .photo-drop:hover { border-color: var(--accent); background: #eafbf3; }
+  .photo-drop.has-img { border-color: var(--success); border-style: solid; }
+  .photo-drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .photo-drop .preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+  .photo-drop .icon { font-size: 1.8rem; }
+  .photo-drop .lbl-foto { font-size: .75rem; color: var(--muted); }
+  .photo-check { position: absolute; top: 6px; left: 6px; background: var(--success); color: #fff; border-radius: 50%; width: 20px; height: 20px; font-size: .7rem; display: none; align-items: center; justify-content: center; }
+  .photo-drop.has-img .photo-check { display: flex; }
+  .remove-btn { position: absolute; top: 6px; right: 6px; z-index: 5; background: rgba(0,0,0,.55); border: none; color: #fff; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: .75rem; display: none; align-items: center; justify-content: center; }
+  .photo-drop.has-img .remove-btn { display: flex; }
+
+  .btn-row { display: flex; gap: .8rem; margin-top: 1.8rem; }
+  .btn { flex: 1; padding: .85rem; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 500; cursor: pointer; transition: all .2s; }
+  .btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+  .btn-primary { background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #fff; }
+  .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-primary:active { transform: scale(.98); }
+  .btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+  .spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: .4rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-banner { background: #fdecec; border: 1px solid var(--error); border-radius: 8px; padding: .8rem 1rem; font-size: .85rem; color: #b8434b; margin-bottom: 1rem; display: none; }
+
+  #success-view { display: none; }
+  .success-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem 2rem; text-align: center; animation: fadeUp .4s ease; }
+  .success-icon { width: 80px; height: 80px; background: #e7f7ef; border: 2px solid var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 1.5rem; animation: popIn .5s cubic-bezier(.34,1.56,.64,1) both; }
+  @keyframes popIn { from { transform:scale(0); opacity:0; } to { transform:scale(1); opacity:1; } }
+  .success-card h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--success); margin-bottom: .7rem; }
+  .success-card p { color: var(--muted); font-size: .9rem; line-height: 1.6; margin-bottom: .3rem; }
+  .drive-path { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: .9rem 1rem; margin: 1.2rem 0; font-size: .82rem; color: var(--text); text-align: left; line-height: 1.9; font-family: monospace; }
+  .btn-new { margin-top: 1rem; width: 100%; }
+
+  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="index.html">← Elegir otro programa</a>
+
+  <header>
+    <div class="badge">🌱 CBTIS 179 · Feb–Jul 2026</div>
+    <h1>Formación Socioemocional</h1>
+    <p>Registra la actividad semanal del manual — los datos se guardan en Google Drive</p>
+  </header>
+
+  <div class="steps" id="steps-bar">
+    <div class="step active" id="step-1"><div class="step-num">1</div><div class="step-label">Datos</div></div>
+    <div class="step-line"></div>
+    <div class="step" id="step-2"><div class="step-num">2</div><div class="step-label">Actividad</div></div>
+    <div class="step-line"></div>
+    <div class="step" id="step-3"><div class="step-num">3</div><div class="step-label">Fotos</div></div>
+  </div>
+
+  <!-- PASO 1 -->
+  <div id="page-1">
+    <div class="card">
+      <div class="card-title">👤 Identificación del docente</div>
+      <div class="field">
+        <label>Apellido paterno y nombre</label>
+        <input type="text" id="docente" placeholder="Ej. Hernández Ibarra Luis Eduardo">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Grupo</label>
+          <input type="text" id="grupo" placeholder="Ej. 1°A">
+        </div>
+        <div class="field">
+          <label>Fecha de la actividad</label>
+          <input type="date" id="fecha">
+        </div>
+      </div>
+      <div class="field">
+        <label>Semestre y ámbito</label>
+        <div class="grado-toggle">
+          <label class="grado-opt">
+            <input type="radio" name="grado" value="1">
+            <div class="grado-card">
+              <div class="g-num">1er semestre</div>
+              <div class="g-name">Práctica y Colaboración Ciudadana</div>
+            </div>
+          </label>
+          <label class="grado-opt">
+            <input type="radio" name="grado" value="3">
+            <div class="grado-card">
+              <div class="g-num">3er semestre</div>
+              <div class="g-name">Educación para la Salud</div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="irPaso(2)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <div id="page-2" style="display:none">
+    <div class="card">
+      <div class="card-title">📝 Actividad de la semana</div>
+      <div class="field">
+        <label>Elige la actividad del manual</label>
+        <select id="actividad"><option value="">— Primero selecciona el semestre en el paso 1 —</option></select>
+        <div class="activity-desc" id="activity-desc"></div>
+      </div>
+      <div class="field">
+        <label>Notas u observaciones (opcional)</label>
+        <textarea id="descripcion" placeholder="Cómo respondieron los alumnos, ajustes que hiciste, observaciones relevantes…"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="irPaso(1)">← Atrás</button>
+        <button class="btn btn-primary" onclick="irPaso(3)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 3 -->
+  <div id="page-3" style="display:none">
+    <div class="card">
+      <div class="card-title">📷 Fotografías de evidencia</div>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1.2rem">Sube 2 fotos de la actividad (máx. 5 MB cada una)</p>
+      <div id="error-banner" class="error-banner"></div>
+      <div class="photos-grid">
+        <div class="photo-drop" id="drop1">
+          <input type="file" id="file1" accept="image/*" onchange="previewPhoto(1,this)">
+          <span class="icon">📷</span><span class="lbl-foto">Foto 1 — clic para subir</span>
+          <div class="photo-check">✓</div>
+          <button class="remove-btn" onclick="removePhoto(event,1)">✕</button>
+        </div>
+        <div class="photo-drop" id="drop2">
+          <input type="file" id="file2" accept="image/*" onchange="previewPhoto(2,this)">
+          <span class="icon">📷</span><span class="lbl-foto">Foto 2 — clic para subir</span>
+          <div class="photo-check">✓</div>
+          <button class="remove-btn" onclick="removePhoto(event,2)">✕</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="irPaso(2)">← Atrás</button>
+        <button class="btn btn-primary" id="btn-enviar" onclick="enviar()">Enviar evidencia ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÉXITO -->
+  <div id="success-view">
+    <div class="success-card">
+      <div class="success-icon">✅</div>
+      <h2>¡Guardado con éxito!</h2>
+      <p>Tu evidencia fue enviada y se guardó automáticamente en Google Drive.</p>
+      <div class="drive-path" id="drive-path-display"></div>
+      <p style="font-size:.8rem;color:var(--muted)">También quedó registrado en la hoja de cálculo general.</p>
+      <button class="btn btn-primary btn-new" onclick="nuevaEvidencia()">+ Registrar otra evidencia</button>
+    </div>
+  </div>
+
+</div>
+
+<footer style="text-align:center;padding:2rem 0 1rem;color:#cdc6bd;font-size:.7rem;letter-spacing:.04em;position:relative;z-index:1;">
+  © 2026 Luis Eduardo Ibarra Hernández · Todos los derechos reservados
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  ⚙️  PEGA AQUÍ LA URL DE TU APPS SCRIPT
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuUoR-CQFkw0b0htKWQ2aTcfK9CKAYWjzq_ZC4YFFL5AD_H8km55_jdQMhd--tzif9/exec";
+// ══════════════════════════════════════════════════════
+
+const AMBITOS = {
+  1: {
+    label: "1er semestre",
+    ambito: "Práctica y Colaboración Ciudadana",
+    actividades: [
+      "El árbol de mis habilidades socioemocionales",
+      "Mis derechos humanos: conocer para defender",
+      "Mis derechos en acción: del derecho a la política pública",
+      "De los problemas a la acción: ¡Jóvenes que transforman!",
+      "Construyamos espacios seguros: reconocer para prevenir la violencia",
+      "¿A quién acudir? Violencia, delitos y redes de apoyo",
+      "Mi entorno seguro: identifico, valoro y protejo",
+      "Mi escudo protector: decisiones que cuidan mi bienestar",
+      "Jóvenes que participan, comunidades que se protegen",
+      "Identificando espacios seguros: transformemos nuestro entorno",
+      "Rompiendo estereotipos: construimos relaciones igualitarias",
+      "Colores que hablan: dibujamos una escuela libre de violencia de género",
+      "Un día en el futuro. ¿Qué planeta queremos?",
+      "De la Tierra a nuestra mesa",
+      "Escuchar para comprender, colaborar para resolver",
+      "Dialogamos, escuchamos y llegamos a acuerdos"
+    ]
+  },
+  3: {
+    label: "3er semestre",
+    ambito: "Educación para la Salud",
+    actividades: [
+      "Explorando mi salud: ¿Cómo me estoy cuidando?",
+      "¿Conocer para prevenir: Mi salud, mi responsabilidad?",
+      "Cuidar la vida: reconocer, acompañar y pedir ayuda",
+      "¿Lo que como también comunica cómo me cuido?",
+      "¿Nuestro planeta también nos cuida: la capa de ozono y nuestras decisiones?",
+      "Mente en pausa: Identificando mis semáforos emocionales",
+      "El plato, los ojos y la sonrisa: el triángulo de la vida saludable",
+      "Detectar a tiempo el derecho a la salud no tiene género",
+      "¿Lo que consumimos el planeta lo siente?",
+      "Decir no, decir sí: Construyendo mis propias decisiones",
+      "¿Decir sí al bienestar?",
+      "¿Cuidarme también significa respetarme?",
+      "Escalera de la violencia",
+      "Violencia normalizada",
+      "Coleccionando firmas",
+      "Caras y gestos"
+    ]
+  }
+};
+
+let photos = {1:null, 2:null};
+let pasoActual = 1;
+
+(function init(){
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  document.querySelectorAll('input[name=grado]').forEach(r => r.addEventListener('change', poblarActividades));
+  document.getElementById('actividad').addEventListener('change', mostrarDescActividad);
+  cargarDocenteGuardado();
+})();
+
+function cargarDocenteGuardado(){
+  try{
+    const guardado = JSON.parse(localStorage.getItem('fs_docente') || 'null');
+    if(!guardado) return;
+    if(guardado.docenteNombre) document.getElementById('docente').value = guardado.docenteNombre;
+    if(guardado.grupo) document.getElementById('grupo').value = guardado.grupo;
+    if(guardado.grado){
+      const radio = document.querySelector(`input[name=grado][value="${guardado.grado}"]`);
+      if(radio){ radio.checked = true; }
+    }
+  }catch(err){ /* localStorage no disponible, se ignora */ }
+}
+
+function guardarDocenteLocal(docenteNombre, grupo, grado){
+  try{
+    localStorage.setItem('fs_docente', JSON.stringify({docenteNombre, grupo, grado}));
+  }catch(err){ /* localStorage no disponible, se ignora */ }
+}
+
+function poblarActividades(){
+  const grado = document.querySelector('input[name=grado]:checked');
+  const sel = document.getElementById('actividad');
+  sel.innerHTML = '';
+  if(!grado){ sel.innerHTML = '<option value="">— Primero selecciona el semestre en el paso 1 —</option>'; return; }
+  const info = AMBITOS[grado.value];
+  sel.innerHTML = '<option value="">— Selecciona la actividad —</option>';
+  info.actividades.forEach((titulo, i) => {
+    const o = document.createElement('option');
+    o.value = i+1;
+    o.textContent = `Actividad ${i+1}: ${titulo}`;
+    sel.appendChild(o);
+  });
+  mostrarDescActividad();
+}
+
+function mostrarDescActividad(){
+  const grado = document.querySelector('input[name=grado]:checked');
+  const sel = document.getElementById('actividad');
+  const desc = document.getElementById('activity-desc');
+  if(!grado || !sel.value){ desc.classList.remove('show'); return; }
+  const info = AMBITOS[grado.value];
+  desc.textContent = `📘 Manual del alumno — ${info.label} · ${info.ambito}`;
+  desc.classList.add('show');
+}
+
+function irPaso(n) {
+  if(n > pasoActual && !validarPaso(pasoActual)) return;
+  if(n===2) poblarActividades();
+  pasoActual = n;
+  [1,2,3].forEach(i => {
+    document.getElementById('page-'+i).style.display = i===n ? 'block' : 'none';
+    const s = document.getElementById('step-'+i);
+    s.className = 'step' + (i===n?' active':i<n?' done':'');
+    s.querySelector('.step-num').textContent = i < n ? '✓' : i;
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function validarPaso(n) {
+  if(n===1){
+    if(!document.getElementById('docente').value.trim()){ alert('Escribe tu apellido paterno y nombre.'); return false; }
+    if(!document.getElementById('grupo').value.trim()){ alert('Indica el grupo.'); return false; }
+    if(!document.getElementById('fecha').value){ alert('Indica la fecha de la actividad.'); return false; }
+    if(!document.querySelector('input[name=grado]:checked')){ alert('Selecciona el semestre y ámbito.'); return false; }
+  }
+  if(n===2){
+    if(!document.getElementById('actividad').value){ alert('Selecciona la actividad de la semana.'); return false; }
+  }
+  return true;
+}
+
+function previewPhoto(n, input){
+  const file = input.files[0]; if(!file) return;
+  if(file.size > 5*1024*1024){ alert('La foto supera 5MB. Elige una imagen más pequeña.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    photos[n] = e.target.result;
+    const drop = document.getElementById('drop'+n);
+    let img = drop.querySelector('.preview');
+    if(!img){ img = document.createElement('img'); img.className='preview'; drop.appendChild(img); }
+    img.src = e.target.result;
+    drop.classList.add('has-img');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto(e,n){
+  e.stopPropagation(); photos[n]=null;
+  const drop=document.getElementById('drop'+n);
+  const img=drop.querySelector('.preview'); if(img) img.remove();
+  document.getElementById('file'+n).value='';
+  drop.classList.remove('has-img');
+}
+
+async function enviar(){
+  const banner=document.getElementById('error-banner'); banner.style.display='none';
+  if(!photos[1]||!photos[2]){ banner.textContent='⚠️ Debes subir las 2 fotografías antes de enviar.'; banner.style.display='block'; return; }
+
+  const docenteNombre=document.getElementById('docente').value.trim();
+  const grupo=document.getElementById('grupo').value.trim();
+  const fecha=document.getElementById('fecha').value;
+  const gradoEl=document.querySelector('input[name=grado]:checked');
+  const info=AMBITOS[gradoEl.value];
+  const actNum=parseInt(document.getElementById('actividad').value,10);
+  const actividadTitulo=info.actividades[actNum-1];
+  const descripcion=document.getElementById('descripcion').value.trim();
+
+  const btn=document.getElementById('btn-enviar');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Guardando en Drive…';
+
+  // MODO DEMO si aún no se configuró la URL
+  if(APPS_SCRIPT_URL==="PEGA_AQUI_LA_URL_DEL_SCRIPT"){
+    await new Promise(r=>setTimeout(r,2000));
+    guardarDocenteLocal(docenteNombre, grupo, gradoEl.value);
+    mostrarExito({docenteNombre, grupo, info, actNum, actividadTitulo}, fecha);
+    btn.disabled=false; btn.textContent='Enviar evidencia ✓';
+    return;
+  }
+
+  try{
+    const payload={
+      programa:'FormacionSocioemocional',
+      docenteNombre, grupo,
+      semestre: info.label, ambito: info.ambito,
+      actividadNumero: actNum, actividadTitulo,
+      fecha, descripcion,
+      foto1:photos[1], foto2:photos[2]
+    };
+    const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(payload)});
+    const json=await res.json();
+    if(json.status==='ok'){
+      guardarDocenteLocal(docenteNombre, grupo, gradoEl.value);
+      mostrarExito({docenteNombre, grupo, info, actNum, actividadTitulo}, fecha);
+    }
+    else throw new Error(json.mensaje||'Error desconocido');
+  }catch(err){
+    banner.textContent='❌ No se pudo guardar: '+err.message+'. Verifica tu conexión e intenta de nuevo.';
+    banner.style.display='block';
+  }finally{
+    btn.disabled=false; btn.innerHTML='Enviar evidencia ✓';
+  }
+}
+
+function mostrarExito(d,fecha){
+  [1,2,3].forEach(i=>document.getElementById('page-'+i).style.display='none');
+  document.getElementById('steps-bar').style.display='none';
+  document.getElementById('drive-path-display').innerHTML=
+    `📁 Formación Socioemocional<br>`+
+    `&nbsp;&nbsp;📁 ${d.docenteNombre} — ${d.info.label} ${d.info.ambito} (${d.grupo})<br>`+
+    `&nbsp;&nbsp;&nbsp;&nbsp;📁 Actividad ${d.actNum} — ${d.actividadTitulo}<br>`+
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼 foto1_${fecha}.jpg<br>`+
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼 foto2_${fecha}.jpg<br>`+
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📄 evidencia_${fecha}.txt`;
+  document.getElementById('success-view').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function nuevaEvidencia(){
+  // El docente, grupo y semestre se mantienen: es lo más probable para la siguiente actividad de la misma persona.
+  photos={1:null,2:null};
+  document.getElementById('descripcion').value='';
+  document.getElementById('actividad').innerHTML='<option value="">— Primero selecciona el semestre en el paso 1 —</option>';
+  document.getElementById('activity-desc').classList.remove('show');
+  document.getElementById('fecha').value=new Date().toISOString().split('T')[0];
+  [1,2].forEach(n=>{const d=document.getElementById('drop'+n);const img=d.querySelector('.preview');if(img)img.remove();document.getElementById('file'+n).value='';d.classList.remove('has-img');});
+  document.getElementById('success-view').style.display='none';
+  document.getElementById('steps-bar').style.display='flex';
+  pasoActual=0; irPaso(1);
+}
+</script>
+</body>
+</html>

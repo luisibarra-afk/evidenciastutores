@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutoría ABC de las Emociones — Feb–Jul 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbf8f4; --surface: #ffffff; --surface2: #f6f2ec;
+    --accent: #ff9eae; --accent2: #ff7a90; --text: #3f3a36;
+    --muted: #938c85; --border: #ece6dd; --success: #4fb488;
+    --error: #d9636b; --radius: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 60% 40% at 80% 10%, rgba(255,158,174,.18) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 50% at 10% 80%, rgba(255,214,224,.22) 0%, transparent 55%);
+  }
+  .container { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 2.5rem 1.2rem 5rem; }
+
+  .back-link { display: inline-flex; align-items: center; gap: .35rem; color: var(--muted); text-decoration: none; font-size: .82rem; margin-bottom: 1.4rem; }
+  .back-link:hover { color: var(--text); }
+
+  header { text-align: center; margin-bottom: 2.5rem; }
+  .badge { display: inline-flex; align-items: center; gap: .4rem; background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #fff; font-size: .7rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; padding: .35rem 1rem; border-radius: 100px; margin-bottom: 1.2rem; }
+  h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,5vw,2.6rem); font-weight: 700; line-height: 1.15; color: var(--text); margin-bottom: .6rem; }
+  header p { color: var(--muted); font-size: .9rem; }
+
+  .steps { display: flex; align-items: center; margin-bottom: 2rem; background: var(--surface); border-radius: var(--radius); padding: .8rem 1.2rem; border: 1px solid var(--border); }
+  .step { display: flex; align-items: center; gap: .5rem; flex: 1; }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 500; background: var(--surface2); color: var(--muted); flex-shrink: 0; transition: all .3s; }
+  .step-label { font-size: .75rem; color: var(--muted); transition: color .3s; white-space: nowrap; }
+  .step.active .step-num { background: var(--accent); color: #fff; }
+  .step.active .step-label { color: var(--text); }
+  .step.done .step-num { background: var(--success); color: #fff; }
+  .step-line { height: 1px; flex: 1; background: var(--border); margin: 0 .6rem; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.8rem 2rem; animation: fadeUp .35s ease both; box-shadow: 0 2px 0 rgba(0,0,0,.02); }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 1.4rem; color: #c4576a; }
+
+  .field { margin-bottom: 1.2rem; }
+  label { display: block; font-size: .75rem; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-bottom: .45rem; }
+  select, input[type=text], input[type=date], textarea { width: 100%; min-width: 0; box-sizing: border-box; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: .95rem; padding: .75rem 1rem; outline: none; transition: border-color .2s; }
+  input[type=date] { -webkit-appearance: none; appearance: none; font-size: .85rem; padding: .75rem .7rem; }
+  select:focus, input:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.55; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:500px){ .field-row { grid-template-columns: 1fr; } }
+
+  .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .photo-drop { border: 2px dashed var(--border); border-radius: 10px; aspect-ratio: 4/3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; cursor: pointer; transition: all .2s; position: relative; overflow: hidden; background: var(--surface2); }
+  .photo-drop:hover { border-color: var(--accent); background: #fff5f6; }
+  .photo-drop.has-img { border-color: var(--success); border-style: solid; }
+  .photo-drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .photo-drop .preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+  .photo-drop .icon { font-size: 1.8rem; }
+  .photo-drop .lbl-foto { font-size: .75rem; color: var(--muted); }
+  .photo-check { position: absolute; top: 6px; left: 6px; background: var(--success); color: #fff; border-radius: 50%; width: 20px; height: 20px; font-size: .7rem; display: none; align-items: center; justify-content: center; }
+  .photo-drop.has-img .photo-check { display: flex; }
+  .remove-btn { position: absolute; top: 6px; right: 6px; z-index: 5; background: rgba(0,0,0,.55); border: none; color: #fff; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: .75rem; display: none; align-items: center; justify-content: center; }
+  .photo-drop.has-img .remove-btn { display: flex; }
+
+  .btn-row { display: flex; gap: .8rem; margin-top: 1.8rem; }
+  .btn { flex: 1; padding: .85rem; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 500; cursor: pointer; transition: all .2s; }
+  .btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+  .btn-primary { background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #fff; }
+  .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-primary:active { transform: scale(.98); }
+  .btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+  .spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: .4rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-banner { background: #fdecec; border: 1px solid var(--error); border-radius: 8px; padding: .8rem 1rem; font-size: .85rem; color: #b8434b; margin-bottom: 1rem; display: none; }
+
+  #success-view { display: none; }
+  .success-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem 2rem; text-align: center; animation: fadeUp .4s ease; }
+  .success-icon { width: 80px; height: 80px; background: #e7f7ef; border: 2px solid var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 1.5rem; animation: popIn .5s cubic-bezier(.34,1.56,.64,1) both; }
+  @keyframes popIn { from { transform:scale(0); opacity:0; } to { transform:scale(1); opacity:1; } }
+  .success-card h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--success); margin-bottom: .7rem; }
+  .success-card p { color: var(--muted); font-size: .9rem; line-height: 1.6; margin-bottom: .3rem; }
+  .drive-path { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: .9rem 1rem; margin: 1.2rem 0; font-size: .82rem; color: var(--text); text-align: left; line-height: 1.9; font-family: monospace; }
+  .btn-new { margin-top: 1rem; width: 100%; }
+
+  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="index.html">← Elegir otro programa</a>
+
+  <header>
+    <div class="badge">📚 CBTIS 179 · Feb–Jul 2026</div>
+    <h1>Tutoría ABC de las Emociones</h1>
+    <p>Registra tu sesión semanal — los datos se guardan en Google Drive</p>
+  </header>
+
+  <div class="steps" id="steps-bar">
+    <div class="step active" id="step-1"><div class="step-num">1</div><div class="step-label">Datos</div></div>
+    <div class="step-line"></div>
+    <div class="step" id="step-2"><div class="step-num">2</div><div class="step-label">Actividad</div></div>
+    <div class="step-line"></div>
+    <div class="step" id="step-3"><div class="step-num">3</div><div class="step-label">Fotos</div></div>
+  </div>
+
+  <!-- PASO 1 -->
+  <div id="page-1">
+    <div class="card">
+      <div class="card-title">👤 Identificación del tutor</div>
+      <div class="field">
+        <label>Tu nombre completo</label>
+        <select id="docente"><option value="">— Selecciona tu nombre —</option></select>
+      </div>
+      <div class="field">
+        <label>Fecha de la tutoría</label>
+        <input type="date" id="fecha">
+      </div>
+      <div class="field">
+        <label>Grupo</label>
+        <input type="text" id="grupo" readonly placeholder="Se llena al elegir tutor" style="color:var(--muted)">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="irPaso(2)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <div id="page-2" style="display:none">
+    <div class="card">
+      <div class="card-title">📝 Descripción de la actividad</div>
+      <div class="field">
+        <label>Título de la actividad</label>
+        <input type="text" id="titulo" placeholder="Ej. Orientación vocacional y plan de vida">
+      </div>
+      <div class="field">
+        <label>Descripción de la actividad</label>
+        <textarea id="descripcion" placeholder="Describe qué realizaste durante la sesión de tutoría, cómo respondieron los alumnos, y cualquier observación relevante…"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="irPaso(1)">← Atrás</button>
+        <button class="btn btn-primary" onclick="irPaso(3)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 3 -->
+  <div id="page-3" style="display:none">
+    <div class="card">
+      <div class="card-title">📷 Fotografías de evidencia</div>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1.2rem">Sube 2 fotos de la sesión (máx. 5 MB cada una)</p>
+      <div id="error-banner" class="error-banner"></div>
+      <div class="photos-grid">
+        <div class="photo-drop" id="drop1">
+          <input type="file" id="file1" accept="image/*" onchange="previewPhoto(1,this)">
+          <span class="icon">📷</span><span class="lbl-foto">Foto 1 — clic para subir</span>
+          <div class="photo-check">✓</div>
+          <button class="remove-btn" onclick="removePhoto(event,1)">✕</button>
+        </div>
+        <div class="photo-drop" id="drop2">
+          <input type="file" id="file2" accept="image/*" onchange="previewPhoto(2,this)">
+          <span class="icon">📷</span><span class="lbl-foto">Foto 2 — clic para subir</span>
+          <div class="photo-check">✓</div>
+          <button class="remove-btn" onclick="removePhoto(event,2)">✕</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="irPaso(2)">← Atrás</button>
+        <button class="btn btn-primary" id="btn-enviar" onclick="enviar()">Enviar evidencia ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÉXITO -->
+  <div id="success-view">
+    <div class="success-card">
+      <div class="success-icon">✅</div>
+      <h2>¡Guardado con éxito!</h2>
+      <p>Tu evidencia fue enviada y se guardó automáticamente en Google Drive.</p>
+      <div class="drive-path" id="drive-path-display"></div>
+      <p style="font-size:.8rem;color:var(--muted)">También quedó registrado en la hoja de cálculo general.</p>
+      <button class="btn btn-primary btn-new" onclick="nuevaEvidencia()">+ Registrar otra evidencia</button>
+    </div>
+  </div>
+
+</div>
+
+<footer style="text-align:center;padding:2rem 0 1rem;color:#cdc6bd;font-size:.7rem;letter-spacing:.04em;position:relative;z-index:1;">
+  © 2026 Luis Eduardo Ibarra Hernández · Todos los derechos reservados
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  ⚙️  PEGA AQUÍ LA URL DE TU APPS SCRIPT
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuUoR-CQFkw0b0htKWQ2aTcfK9CKAYWjzq_ZC4YFFL5AD_H8km55_jdQMhd--tzif9/exec";
+// ══════════════════════════════════════════════════════
+
+const TUTORES = [
+  {id:1,  grupo:"2AMARH", aula:4,  nombre:"LIC. ROSARIO MORA MONROY"},
+  {id:2,  grupo:"2AMTSO", aula:1,  nombre:"LIC. BETTY CAMARGO APARICIO"},
+  {id:3,  grupo:"2AMARQ", aula:12, nombre:"ARQ. ALEJANDRO ARRIETA LÓPEZ"},
+  {id:4,  grupo:"2AMPRO", aula:9,  nombre:"ING. STEPHANY GARRIDO FLORES"},
+  {id:5,  grupo:"2AMELE", aula:7,  nombre:"ING. GREGORIO CUEVAS NERI"},
+  {id:6,  grupo:"2AVARH", aula:4,  nombre:"LIC. VICTOR HUGO CRUZ CONTRERAS"},
+  {id:7,  grupo:"2AVTSO", aula:1,  nombre:"LIC. LUCILA MENDOZA GONZALEZ"},
+  {id:8,  grupo:"2AVARQ", aula:12, nombre:"LIC. EDWIN CHOFO ORTEGA DE LA CRUZ"},
+  {id:9,  grupo:"2AVPRO", aula:9,  nombre:"ING. FLOR HERNANDEZ PADILLA"},
+  {id:10, grupo:"2AVMEC", aula:7,  nombre:"LIC. ESCUDERO RODRIGUEZ LUIS EDUARDO"},
+  {id:11, grupo:"2AVCIB", aula:19, nombre:"LIC. RODRIGO GUILLERMO HERNÁNDEZ ESCORZA"},
+  {id:12, grupo:"4AMARH", aula:5,  nombre:"LIC. ÁNGELES HERNÁNDEZ ELMA"},
+  {id:13, grupo:"4AMTSO", aula:2,  nombre:"LIC. MÓNICA ELENA GARCÍA OLVERA"},
+  {id:14, grupo:"4AMARQ", aula:16, nombre:"ING. JESSICA GISELA LÓPEZ ORTEGA"},
+  {id:15, grupo:"4AMPRO", aula:10, nombre:"MTRO. JORGE LUIS NERI TREJO"},
+  {id:16, grupo:"4AMELE", aula:15, nombre:"LIC. ALMA VIRIDIANA MARTINEZ GUZMAN"},
+  {id:17, grupo:"4AVARH", aula:5,  nombre:"LIC. IMELDA GÓMEZ JIMÉNEZ"},
+  {id:18, grupo:"4AVTSO", aula:2,  nombre:"LIC. LILIANA DÍAZ TENORIO"},
+  {id:19, grupo:"4AVARQ", aula:16, nombre:"LIC. JOSE PABLO OZORNIO SUAREZ"},
+  {id:20, grupo:"4AVPRO", aula:10, nombre:"LIC. GUILLERMO MIRANDA FLORES"},
+  {id:21, grupo:"4AVMEC", aula:15, nombre:"MTRA. PATRICIA SIMÓN BASTIDA"},
+  {id:22, grupo:"6AMARH", aula:6,  nombre:"LIC. MARITZA GUTIERREZ CORTES"},
+  {id:23, grupo:"6AMTSO", aula:3,  nombre:"LIC. JUANA INES ALANÍS BETANCOURT"},
+  {id:24, grupo:"6AMARQ", aula:17, nombre:"LIC. MA. ANGELINA ROBLEDO GODINEZ"},
+  {id:25, grupo:"6AMPRO", aula:11, nombre:"ING. PEÑA FLORES MARIO ULISES"},
+  {id:26, grupo:"6AMELE", aula:14, nombre:"LIC. FATIMA JUDITH VAZQUEZ ROMERO"},
+  {id:27, grupo:"6AVARH", aula:6,  nombre:"LIC. AMALIA ZOBEYDAH FLORES BARRERA"},
+  {id:28, grupo:"6AVTSO", aula:3,  nombre:"LIC. ANGELICA MARIA SANCHEZ CERON"},
+  {id:29, grupo:"6AVARQ", aula:17, nombre:"LIC. MARÍA SOLEDAD MACEDO"},
+  {id:30, grupo:"6AVPRO", aula:11, nombre:"LIC. LUIS EDUARDO IBARRA HERNANDEZ"},
+  {id:31, grupo:"6AVMEC", aula:14, nombre:"LIC. JUAN CARLOS ORTEGA ROMERO"},
+];
+
+let photos = {1:null, 2:null};
+let pasoActual = 1;
+
+(function init(){
+  const sel = document.getElementById('docente');
+  TUTORES.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t.id;
+    o.textContent = `${t.nombre} — ${t.grupo}`;
+    sel.appendChild(o);
+  });
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  document.getElementById('docente').addEventListener('change', function(){
+    const t = TUTORES.find(x => x.id == this.value);
+    document.getElementById('grupo').value = t ? t.grupo : '';
+  });
+
+  try{
+    const idGuardado = localStorage.getItem('tutoria_docente_id');
+    if(idGuardado){
+      sel.value = idGuardado;
+      sel.dispatchEvent(new Event('change'));
+    }
+  }catch(err){ /* localStorage no disponible, se ignora */ }
+})();
+
+function guardarDocenteLocal(id){
+  try{ localStorage.setItem('tutoria_docente_id', id); }catch(err){ /* localStorage no disponible, se ignora */ }
+}
+
+function irPaso(n) {
+  if(n > pasoActual && !validarPaso(pasoActual)) return;
+  pasoActual = n;
+  [1,2,3].forEach(i => {
+    document.getElementById('page-'+i).style.display = i===n ? 'block' : 'none';
+    const s = document.getElementById('step-'+i);
+    s.className = 'step' + (i===n?' active':i<n?' done':'');
+    s.querySelector('.step-num').textContent = i < n ? '✓' : i;
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function validarPaso(n) {
+  if(n===1){
+    if(!document.getElementById('docente').value){ alert('Selecciona tu nombre.'); return false; }
+    if(!document.getElementById('fecha').value){ alert('Indica la fecha de la tutoría.'); return false; }
+  }
+  if(n===2){
+    if(!document.getElementById('titulo').value.trim()){ alert('Escribe el título de la actividad.'); return false; }
+    if(!document.getElementById('descripcion').value.trim()){ alert('Escribe la descripción de la actividad.'); return false; }
+  }
+  return true;
+}
+
+function previewPhoto(n, input){
+  const file = input.files[0]; if(!file) return;
+  if(file.size > 5*1024*1024){ alert('La foto supera 5MB. Elige una imagen más pequeña.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    photos[n] = e.target.result;
+    const drop = document.getElementById('drop'+n);
+    let img = drop.querySelector('.preview');
+    if(!img){ img = document.createElement('img'); img.className='preview'; drop.appendChild(img); }
+    img.src = e.target.result;
+    drop.classList.add('has-img');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto(e,n){
+  e.stopPropagation(); photos[n]=null;
+  const drop=document.getElementById('drop'+n);
+  const img=drop.querySelector('.preview'); if(img) img.remove();
+  document.getElementById('file'+n).value='';
+  drop.classList.remove('has-img');
+}
+
+async function enviar(){
+  const banner=document.getElementById('error-banner'); banner.style.display='none';
+  if(!photos[1]||!photos[2]){ banner.textContent='⚠️ Debes subir las 2 fotografías antes de enviar.'; banner.style.display='block'; return; }
+
+  const tutorId=document.getElementById('docente').value;
+  const tutor=TUTORES.find(t=>t.id==tutorId);
+  const fecha=document.getElementById('fecha').value;
+  const titulo=document.getElementById('titulo').value.trim();
+  const descripcion=document.getElementById('descripcion').value.trim();
+
+  const btn=document.getElementById('btn-enviar');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Guardando en Drive…';
+
+  // MODO DEMO si aún no se configuró la URL
+  if(APPS_SCRIPT_URL==="PEGA_AQUI_LA_URL_DEL_SCRIPT"){
+    await new Promise(r=>setTimeout(r,2000));
+    guardarDocenteLocal(tutorId);
+    mostrarExito(tutor,fecha);
+    btn.disabled=false; btn.textContent='Enviar evidencia ✓';
+    return;
+  }
+
+  try{
+    const payload={ programa:'TutoriaABC', tutorNombre:tutor.nombre, tutorGrupo:tutor.grupo, tutorAula:tutor.aula, fecha, titulo, descripcion, foto1:photos[1], foto2:photos[2] };
+    const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(payload)});
+    const json=await res.json();
+    if(json.status==='ok'){
+      guardarDocenteLocal(tutorId);
+      mostrarExito(tutor,fecha);
+    }
+    else throw new Error(json.mensaje||'Error desconocido');
+  }catch(err){
+    banner.textContent='❌ No se pudo guardar: '+err.message+'. Verifica tu conexión e intenta de nuevo.';
+    banner.style.display='block';
+  }finally{
+    btn.disabled=false; btn.innerHTML='Enviar evidencia ✓';
+  }
+}
+
+function mostrarExito(tutor,fecha){
+  [1,2,3].forEach(i=>document.getElementById('page-'+i).style.display='none');
+  document.getElementById('steps-bar').style.display='none';
+  document.getElementById('drive-path-display').innerHTML=
+    `📁 Tutoría ABC de las Emociones<br>`+
+    `&nbsp;&nbsp;📁 ${tutor.nombre} (${tutor.grupo})<br>`+
+    `&nbsp;&nbsp;&nbsp;&nbsp;📁 ${fecha}<br>`+
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼 foto1_${fecha}.jpg<br>`+
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼 foto2_${fecha}.jpg<br>`+
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📄 evidencia_${fecha}.txt`;
+  document.getElementById('success-view').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function nuevaEvidencia(){
+  // El docente y grupo se mantienen: es lo más probable para la siguiente sesión de la misma persona.
+  photos={1:null,2:null};
+  ['titulo','descripcion'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fecha').value=new Date().toISOString().split('T')[0];
+  [1,2].forEach(n=>{const d=document.getElementById('drop'+n);const img=d.querySelector('.preview');if(img)img.remove();document.getElementById('file'+n).value='';d.classList.remove('has-img');});
+  document.getElementById('success-view').style.display='none';
+  document.getElementById('steps-bar').style.display='flex';
+  pasoActual=0; irPaso(1);
+}
+</script>
+</body>
+</html>
