@@ -133,7 +133,7 @@
       </div>
       <div class="field">
         <label>Grupo</label>
-        <input type="text" id="grupo" readonly placeholder="Se llena al elegir tutor" style="color:var(--muted)">
+        <input type="text" id="grupo" placeholder="Se llena al elegir tutor, puedes editarlo">
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="irPaso(2)">Continuar →</button>
@@ -461,6 +461,7 @@ function irPaso(n) {
 function validarPaso(n) {
   if(n===1){
     if(!document.getElementById('docente').value){ alert('Selecciona tu nombre.'); return false; }
+    if(!document.getElementById('grupo').value.trim()){ alert('Indica el grupo.'); return false; }
     if(!document.getElementById('semana').value){ alert('Indica la semana de la tutoría.'); return false; }
   }
   if(n===2){
@@ -498,6 +499,7 @@ async function enviar(){
 
   const tutorId=document.getElementById('docente').value;
   const tutor=TUTORES.find(t=>t.id==tutorId);
+  const grupo=document.getElementById('grupo').value.trim();
   const semanaIdx=SEMANAS.findIndex(s=>s.value===document.getElementById('semana').value);
   const fecha=SEMANAS[semanaIdx].value;
   const semanaLabel=SEMANAS[semanaIdx].label;
@@ -512,18 +514,18 @@ async function enviar(){
   if(APPS_SCRIPT_URL==="PEGA_AQUI_LA_URL_DEL_SCRIPT"){
     await new Promise(r=>setTimeout(r,2000));
     guardarDocenteLocal(tutorId);
-    mostrarExito(tutor,fecha,{semanaLabel,tema});
+    mostrarExito(tutor,fecha,{semanaLabel,tema,grupo});
     btn.disabled=false; btn.textContent='Enviar evidencia ✓';
     return;
   }
 
   try{
-    const payload={ programa:'TutoriaABC', tutorNombre:tutor.nombre, tutorGrupo:tutor.grupo, tutorAula:tutor.aula, fecha, semanaLabel, titulo, unidad:tema.unidad, descripcion, foto1:photos[1], foto2:photos[2] };
+    const payload={ programa:'TutoriaABC', tutorNombre:tutor.nombre, tutorGrupo:grupo, tutorAula:tutor.aula, fecha, semanaLabel, titulo, unidad:tema.unidad, descripcion, foto1:photos[1], foto2:photos[2] };
     const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(payload)});
     const json=await res.json();
     if(json.status==='ok'){
       guardarDocenteLocal(tutorId);
-      mostrarExito(tutor,fecha,{semanaLabel,tema});
+      mostrarExito(tutor,fecha,{semanaLabel,tema,grupo});
     }
     else throw new Error(json.mensaje||'Error desconocido');
   }catch(err){
@@ -539,7 +541,7 @@ function mostrarExito(tutor,fecha,info){
   document.getElementById('steps-bar').style.display='none';
   document.getElementById('drive-path-display').innerHTML=
     `📁 Tutoría ABC de las Emociones<br>`+
-    `&nbsp;&nbsp;📁 ${tutor.nombre} (${tutor.grupo})<br>`+
+    `&nbsp;&nbsp;📁 ${tutor.nombre} (${info.grupo})<br>`+
     `&nbsp;&nbsp;&nbsp;&nbsp;📁 ${info.semanaLabel} — ${info.tema.titulo}<br>`+
     `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼 foto1_${fecha}.jpg<br>`+
     `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼 foto2_${fecha}.jpg<br>`+
