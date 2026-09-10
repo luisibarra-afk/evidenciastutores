@@ -133,7 +133,7 @@
       </div>
       <div class="field">
         <label>Grupo</label>
-        <input type="text" id="grupo" placeholder="Se llena al elegir tutor, puedes editarlo">
+        <input type="text" id="grupo" placeholder="Ej. 2AMARH">
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="irPaso(2)">Continuar →</button>
@@ -401,16 +401,12 @@ let pasoActual = 1;
     sel.appendChild(o);
   });
   poblarSemanas();
-  document.getElementById('docente').addEventListener('change', function(){
-    const t = TUTORES.find(x => x.id == this.value);
-    document.getElementById('grupo').value = t ? t.grupo : '';
-  });
 
   try{
-    const idGuardado = localStorage.getItem('tutoria_docente_id');
-    if(idGuardado){
-      sel.value = idGuardado;
-      sel.dispatchEvent(new Event('change'));
+    const guardado = JSON.parse(localStorage.getItem('tutoria_docente') || 'null');
+    if(guardado){
+      if(guardado.docenteId) sel.value = guardado.docenteId;
+      if(guardado.grupo) document.getElementById('grupo').value = guardado.grupo;
     }
   }catch(err){ /* localStorage no disponible, se ignora */ }
 })();
@@ -441,8 +437,8 @@ function mostrarTema(){
     `<div class="t-seccion t-cierre"><b>Cierre:</b> ${tema.cierre}</div>`;
 }
 
-function guardarDocenteLocal(id){
-  try{ localStorage.setItem('tutoria_docente_id', id); }catch(err){ /* localStorage no disponible, se ignora */ }
+function guardarDocenteLocal(docenteId, grupo){
+  try{ localStorage.setItem('tutoria_docente', JSON.stringify({docenteId, grupo})); }catch(err){ /* localStorage no disponible, se ignora */ }
 }
 
 function irPaso(n) {
@@ -513,7 +509,7 @@ async function enviar(){
   // MODO DEMO si aún no se configuró la URL
   if(APPS_SCRIPT_URL==="PEGA_AQUI_LA_URL_DEL_SCRIPT"){
     await new Promise(r=>setTimeout(r,2000));
-    guardarDocenteLocal(tutorId);
+    guardarDocenteLocal(tutorId, grupo);
     mostrarExito(tutor,fecha,{semanaLabel,tema,grupo});
     btn.disabled=false; btn.textContent='Enviar evidencia ✓';
     return;
@@ -524,7 +520,7 @@ async function enviar(){
     const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(payload)});
     const json=await res.json();
     if(json.status==='ok'){
-      guardarDocenteLocal(tutorId);
+      guardarDocenteLocal(tutorId, grupo);
       mostrarExito(tutor,fecha,{semanaLabel,tema,grupo});
     }
     else throw new Error(json.mensaje||'Error desconocido');
