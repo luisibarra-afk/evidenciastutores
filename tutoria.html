@@ -53,7 +53,12 @@
   .tema-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; }
   .tema-card .t-unidad { font-size: .72rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--accent2); margin-bottom: .3rem; }
   .tema-card .t-titulo { font-family: 'Playfair Display', serif; font-weight: 600; font-size: 1.05rem; color: var(--text); margin-bottom: .3rem; }
-  .tema-card .t-fuente { font-size: .78rem; color: var(--muted); }
+  .tema-card .t-fuente { font-size: .78rem; color: var(--muted); margin-bottom: .9rem; padding-bottom: .9rem; border-bottom: 1px dashed var(--border); }
+  .tema-card .t-seccion { font-size: .85rem; color: var(--text); line-height: 1.6; margin-bottom: .6rem; }
+  .tema-card .t-seccion b { color: #c4576a; }
+  .tema-card .t-pasos { margin: 0 0 .9rem 1.1rem; padding: 0; font-size: .85rem; color: var(--text); line-height: 1.7; }
+  .tema-card .t-pasos li { margin-bottom: .35rem; }
+  .tema-card .t-cierre { margin-bottom: 0; }
   @media(max-width:500px){ .field-row { grid-template-columns: 1fr; } }
 
   .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -260,20 +265,128 @@ const SEMANAS = [
 ];
 
 const TEMARIO = [
-  {unidad:"Unidad 1 · Salud mental, ¿qué es eso?", titulo:"Semáforo de las emociones", fuente:"Orientaciones para jóvenes"},
-  {unidad:"Unidad 1 · Salud mental, ¿qué es eso?", titulo:"Diario breve de emociones", fuente:"Orientaciones para jóvenes"},
-  {unidad:"Unidad 1 · ¿Qué es la salud mental?", titulo:"Estereotipos de género", fuente:"Orientaciones para docentes"},
-  {unidad:"Unidad 2 · Cuidarnos y acompañar a otras personas", titulo:"Un respiro", fuente:"Orientaciones para docentes"},
-  {unidad:"Unidad 2 · Cuidarnos y cuidar a otras personas", titulo:"5 sentidos y 5 cosas + Respiración 4-7-8", fuente:"Orientaciones para jóvenes"},
-  {unidad:"Unidad 2 · Cuidarnos y acompañar a otras personas", titulo:"Aula que escucha, aula que cuida", fuente:"Orientaciones para docentes"},
-  {unidad:"Unidad 2 · Cuidarnos y cuidar a otras personas", titulo:"Pensar nuestro camino", fuente:"Orientaciones para jóvenes"},
-  {unidad:"Unidad 3 · ¿Cómo vivimos y sentimos el mundo virtual?", titulo:"¿Cómo nos hacen sentir las redes sociales?", fuente:"Orientaciones para jóvenes"},
-  {unidad:"Unidad 3 · Uso de las tecnologías digitales", titulo:"Análisis de caso: Ciberacoso", fuente:"Orientaciones para docentes"},
-  {unidad:"Unidad 3 · Uso de las tecnologías digitales", titulo:"Reflexionemos sobre la discriminación", fuente:"Orientaciones para docentes"},
-  {unidad:"Unidad 3 · Uso de las tecnologías digitales", titulo:"Análisis de caso: Ana e Iván", fuente:"Orientaciones para docentes"},
-  {unidad:"Unidad 4 · De lo que sentimos a lo que transformamos", titulo:"Lo que sentimos también transforma", fuente:"Orientaciones para jóvenes"},
-  {unidad:"Unidad 4 · Estrategias para la participación y el bienestar", titulo:"Análisis de caso: Cuando etiquetamos, también limitamos", fuente:"Orientaciones para docentes"},
-  {unidad:"Unidad 4 · Estrategias para la participación y el bienestar", titulo:"Explorando el proyecto de vida en el aula", fuente:"Orientaciones para docentes"}
+  {unidad:"Unidad 1 · Salud mental, ¿qué es eso?", titulo:"Semáforo de las emociones", fuente:"Orientaciones para jóvenes",
+    materiales:"Hoja y pluma para cada estudiante.",
+    pasos:[
+      "Cada quien recuerda una situación reciente que le generó una emoción fuerte y la escribe.",
+      "Describe qué la provocó y cómo reaccionó.",
+      "Marca su estado emocional actual: verde (energía y buen ánimo), amarillo (tensión, nerviosismo, cansancio) o rojo (pérdida de control que afecta sus actividades).",
+      "Completa la frase: “El/la [emoción] no es buena ni mala, me ayuda a…”."
+    ],
+    cierre:"Compartir qué descubrieron sobre sus emociones y cómo fortalecer su bienestar."},
+  {unidad:"Unidad 1 · Salud mental, ¿qué es eso?", titulo:"Diario breve de emociones", fuente:"Orientaciones para jóvenes",
+    materiales:"Una tabla semanal (lunes a domingo) por estudiante, impresa o en el cuaderno.",
+    pasos:[
+      "Durante la semana, cada quien registra: qué emoción sintió con más fuerza cada día, qué la provocó y qué hizo con ella.",
+      "Al cierre de la semana, identifica sus emociones más frecuentes.",
+      "Comparte sus observaciones en grupo, reconociendo que cada persona vive sus emociones distinto."
+    ],
+    cierre:"¿Qué otras acciones podrían favorecer su bienestar a lo largo del día?"},
+  {unidad:"Unidad 1 · ¿Qué es la salud mental?", titulo:"Estereotipos de género", fuente:"Orientaciones para docentes",
+    materiales:"Una hoja dividida en dos columnas por participante.",
+    pasos:[
+      "Columna A: ideas de estereotipos de género que han escuchado (\"debo estar bien siempre\", \"no debo mostrar debilidad\"…).",
+      "Columna B: emociones, necesidades y formas de autocuidado propias.",
+      "Comparen ambas columnas e identifiquen diferencias y contradicciones.",
+      "Compartan hallazgos con el grupo."
+    ],
+    cierre:"¿Qué otras formas de cuidado podrían construir más allá de los estereotipos de género?"},
+  {unidad:"Unidad 2 · Cuidarnos y acompañar a otras personas", titulo:"Un respiro", fuente:"Orientaciones para docentes",
+    materiales:"Ninguno — solo un espacio tranquilo. El docente guía el ejercicio en voz alta (≈5 min).",
+    pasos:[
+      "Pausa intencional (30 seg): deténganse, aléjense del ruido, postura cómoda.",
+      "Respiración consciente (2 min): inhalar por la nariz contando 4, sostener 2-3, exhalar por la boca contando 6. Repetir 3-5 veces.",
+      "Liberar tensión (1 min): subir y bajar hombros, estirar brazos, mover el cuello con suavidad.",
+      "Cierre de la pausa (2 min): pensar en momentos del día que generan bienestar o satisfacción."
+    ],
+    cierre:"Compartir qué actividades, espacios o relaciones en la escuela ayudan a sentirse mejor."},
+  {unidad:"Unidad 2 · Cuidarnos y cuidar a otras personas", titulo:"5 sentidos y 5 cosas + Respiración 4-7-8", fuente:"Orientaciones para jóvenes",
+    materiales:"Ninguno.",
+    pasos:[
+      "5 sentidos: ver 5 cosas del entorno y nombrarlas, sentir 4 texturas, escuchar 3 sonidos, oler 2 aromas, probar/recordar 1 sabor. Sin prisa.",
+      "Respiración 4-7-8: inhalar por la nariz contando 4, sostener el aire contando 7, exhalar por la boca contando 8. Repetir 3 veces."
+    ],
+    cierre:"Reflexionar cómo se sintieron antes y después de los ejercicios."},
+  {unidad:"Unidad 2 · Cuidarnos y acompañar a otras personas", titulo:"Aula que escucha, aula que cuida", fuente:"Orientaciones para docentes",
+    materiales:"Ninguno — dinámica de diálogo grupal.",
+    pasos:[
+      "Dialogar cómo se ha sentido el grupo durante la semana (con preguntas o dinámicas acordes al grupo).",
+      "Identificar emociones, inquietudes o situaciones frecuentes y su impacto en la convivencia.",
+      "Promover la escucha respetuosa y el intercambio de perspectivas.",
+      "Escribir colectivamente acciones o acuerdos que contribuyan al bienestar común."
+    ],
+    cierre:"¿Qué nuevas acciones podrían aumentar el cuidado mutuo y la participación en el grupo?"},
+  {unidad:"Unidad 2 · Cuidarnos y cuidar a otras personas", titulo:"Pensar nuestro camino", fuente:"Orientaciones para jóvenes",
+    materiales:"Hoja y pluma.",
+    pasos:[
+      "Recordar una decisión reciente tomada bajo presión externa: ¿qué sintieron, qué querían hacer, qué influyó?",
+      "Completar las frases: \"A veces siento presión por…\", \"Yo realmente quiero…\", \"Algo importante para mí es…\".",
+      "Listar 5 cosas importantes en su vida y reducir la lista a 3.",
+      "Anotar una presión que quieren dejar de lado y algo que valoran o le da sentido a su vida.",
+      "Compartir reflexiones con el grupo."
+    ],
+    cierre:"¿Qué nuevas preguntas o acciones pueden ayudarles a seguir construyendo su proyecto de vida?"},
+  {unidad:"Unidad 3 · ¿Cómo vivimos y sentimos el mundo virtual?", titulo:"¿Cómo nos hacen sentir las redes sociales?", fuente:"Orientaciones para jóvenes",
+    materiales:"Ninguno.",
+    pasos:[
+      "Reflexionar: ¿qué emociones suelen aparecer al usar redes sociales? ¿cómo influyen en su bienestar?",
+      "Compartir reflexiones con el grupo, de forma voluntaria.",
+      "Revisar juntos tips de uso responsable: dejar de seguir cuentas que hacen sentir mal, evitar comparaciones con contenido idealizado, proteger datos personales, poner límites de tiempo en pantalla, desconectarse 30 min antes de dormir."
+    ],
+    cierre:"¿Qué pueden hacer para promover un uso más saludable de las redes sociales?"},
+  {unidad:"Unidad 3 · Uso de las tecnologías digitales", titulo:"Análisis de caso: Ciberacoso", fuente:"Orientaciones para docentes",
+    materiales:"El caso, para leer en voz alta o proyectar.",
+    pasos:[
+      "Leer el caso: en un plantel circulan memes y comentarios que sexualizan y exponen a varias alumnas en redes, incluidas capturas de conversaciones privadas sin consentimiento.",
+      "Discutir en grupo: ¿qué acciones institucionales y pedagógicas podrían prevenir y atender estas situaciones?",
+      "Reflexionar sobre reglas claras de uso de tecnología y protección de datos en el aula."
+    ],
+    cierre:"Construir acuerdos grupales sobre uso responsable de redes y respeto entre compañeros."},
+  {unidad:"Unidad 3 · Uso de las tecnologías digitales", titulo:"Reflexionemos sobre la discriminación", fuente:"Orientaciones para docentes",
+    materiales:"Hoja y pluma.",
+    pasos:[
+      "Escribir 3 ideas o frases que hayan escuchado o pensado sobre personas con orientaciones sexuales diversas, y preguntarse: ¿de dónde viene esta idea? ¿es un hecho o un prejuicio?",
+      "Recordar una situación de homofobia en el salón: ¿hubo bromas, silencios o comentarios que la normalizaran? ¿cómo se actuó?",
+      "Escribir un compromiso concreto (por ejemplo: intervenir ante burlas, usar lenguaje inclusivo, generar espacios seguros)."
+    ],
+    cierre:"Compartir los compromisos de forma voluntaria."},
+  {unidad:"Unidad 3 · Uso de las tecnologías digitales", titulo:"Análisis de caso: Ana e Iván", fuente:"Orientaciones para docentes",
+    materiales:"El caso, para leer en voz alta o proyectar.",
+    pasos:[
+      "Leer el caso: una amistad donde una persona exige atención exclusiva, reacciona con reclamos y, al no recibir esa atención, pasa a mensajes de enojo y amenazas.",
+      "Discutir: ¿qué señales de alerta identifican en el caso?",
+      "Discutir: ¿qué prácticas escolares pueden prevenir una situación de violencia extrema (comunicación, diálogo, detección y canales de apoyo)?",
+      "Discutir: ¿qué apoyo requiere la persona afectada?"
+    ],
+    cierre:"La escuela tiene la responsabilidad de prevenir y atender la violencia y promover espacios libres de discriminación."},
+  {unidad:"Unidad 4 · De lo que sentimos a lo que transformamos", titulo:"Lo que sentimos también transforma", fuente:"Orientaciones para jóvenes",
+    materiales:"Hoja y pluma, trabajo en equipos.",
+    pasos:[
+      "Pensar en algo que sucede en la escuela, comunidad o el mundo que no les guste o que les dé esperanza.",
+      "Compartir en grupo qué emociones aparecen con más frecuencia entre ellos.",
+      "Elegir uno de los problemas identificados: ¿por qué es importante atenderlo? ¿a quiénes afecta?",
+      "Listar acciones cotidianas que podrían generar cambios (escuchar, incluir, no discriminar, apoyar a alguien).",
+      "Diseñar una acción sencilla y realista: qué van a hacer, quiénes participan, cómo y cuándo."
+    ],
+    cierre:"No todo depende de una sola persona, pero sí pueden aportar ideas y acciones en colectivo."},
+  {unidad:"Unidad 4 · Estrategias para la participación y el bienestar", titulo:"Análisis de caso: Cuando etiquetamos, también limitamos", fuente:"Orientaciones para docentes",
+    materiales:"El caso, para leer en voz alta o proyectar.",
+    pasos:[
+      "Leer el caso: una docente etiqueta a su grupo como \"buenos\" y \"rezagados\", dando más participación y retroalimentación a unos que a otros.",
+      "Discutir: ¿qué expectativas implícitas hay sobre el estudiantado? ¿cómo influyen las comparaciones en su motivación y autoestima?",
+      "Discutir: ¿qué prácticas refuerzan desigualdades en el aula? ¿qué cambios generarían expectativas más justas?"
+    ],
+    cierre:"La participación puede darse de muchas formas: hablando, escuchando, escribiendo, proponiendo o colaborando."},
+  {unidad:"Unidad 4 · Estrategias para la participación y el bienestar", titulo:"Explorando el proyecto de vida en el aula", fuente:"Orientaciones para docentes",
+    materiales:"Hoja o rotafolio por equipo.",
+    pasos:[
+      "Plantear la situación: una persona joven por egresar quiere seguir aprendiendo, trabajar y aportar a su comunidad, pero no sabe cómo empezar.",
+      "Por equipos, imaginar un escenario con oportunidades, desafíos y apoyos, a partir de sus propias experiencias e intereses.",
+      "Cada equipo expone su escenario destacando lo que más les importe.",
+      "Comentar entre todos los elementos que se repiten o resultan significativos.",
+      "Elaborar una tabla grupal de desafíos y apoyos que no se habían imaginado antes."
+    ],
+    cierre:"Un proyecto de vida no surge de una sola decisión, sino de múltiples experiencias; no tienen que tener todo resuelto."}
 ];
 
 let photos = {1:null, 2:null};
@@ -321,7 +434,11 @@ function mostrarTema(){
   document.getElementById('tema-semana').innerHTML =
     `<div class="t-unidad">${tema.unidad}</div>`+
     `<div class="t-titulo">${tema.titulo}</div>`+
-    `<div class="t-fuente">📘 ${tema.fuente} — El ABC de las emociones (SEP)</div>`;
+    `<div class="t-fuente">📘 ${tema.fuente} — El ABC de las emociones (SEP)</div>`+
+    `<div class="t-seccion"><b>Qué necesitas:</b> ${tema.materiales}</div>`+
+    `<div class="t-seccion"><b>Dinámica sugerida:</b></div>`+
+    `<ol class="t-pasos">${tema.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>`+
+    `<div class="t-seccion t-cierre"><b>Cierre:</b> ${tema.cierre}</div>`;
 }
 
 function guardarDocenteLocal(id){
