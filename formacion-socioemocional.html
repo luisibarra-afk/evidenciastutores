@@ -53,10 +53,10 @@
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   @media(max-width:500px){ .field-row { grid-template-columns: 1fr; } }
 
-  .grado-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin-bottom: 1.2rem; }
-  .grado-opt { position: relative; }
+  .grado-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin-bottom: 1.2rem; align-items: stretch; }
+  .grado-opt { position: relative; display: flex; }
   .grado-opt input { position: absolute; opacity: 0; inset: 0; cursor: pointer; margin: 0; }
-  .grado-card { border: 2px solid var(--border); border-radius: 10px; padding: .9rem 1rem; background: var(--surface2); transition: all .15s; }
+  .grado-card { flex: 1; border: 2px solid var(--border); border-radius: 10px; padding: .9rem 1rem; background: var(--surface2); transition: all .15s; }
   .grado-opt input:checked + .grado-card { border-color: var(--accent); background: #eafbf3; }
   .grado-card .g-num { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2rem; color: var(--text); }
   .grado-card .g-name { font-size: .75rem; color: var(--muted); margin-top: .15rem; line-height: 1.4; }
@@ -130,15 +130,13 @@
         <label>Apellido paterno y nombre</label>
         <input type="text" id="docente" placeholder="Ej. Hernández Ibarra Luis Eduardo">
       </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Grupo</label>
-          <input type="text" id="grupo" placeholder="Ej. 1°A">
-        </div>
-        <div class="field">
-          <label>Fecha de la actividad</label>
-          <input type="date" id="fecha">
-        </div>
+      <div class="field">
+        <label>Grupo</label>
+        <input type="text" id="grupo" placeholder="Ej. 1°A">
+      </div>
+      <div class="field">
+        <label>Semana de la actividad</label>
+        <select id="semana"></select>
       </div>
       <div class="field">
         <label>Semestre y ámbito</label>
@@ -283,15 +281,45 @@ const AMBITOS = {
   }
 };
 
+const SEMANAS = [
+  {value:"2026-08-31", end:"2026-09-04", label:"Semana 1 · 31 ago – 4 sep"},
+  {value:"2026-09-07", end:"2026-09-11", label:"Semana 2 · 7 – 11 sep"},
+  {value:"2026-09-14", end:"2026-09-18", label:"Semana 3 · 14 – 18 sep"},
+  {value:"2026-09-21", end:"2026-09-25", label:"Semana 4 · 21 – 25 sep"},
+  {value:"2026-09-28", end:"2026-10-02", label:"Semana 5 · 28 sep – 2 oct"},
+  {value:"2026-10-05", end:"2026-10-09", label:"Semana 6 · 5 – 9 oct"},
+  {value:"2026-10-12", end:"2026-10-16", label:"Semana 7 · 12 – 16 oct"},
+  {value:"2026-10-19", end:"2026-10-23", label:"Semana 8 · 19 – 23 oct"},
+  {value:"2026-10-26", end:"2026-10-30", label:"Semana 9 · 26 – 30 oct"},
+  {value:"2026-11-02", end:"2026-11-06", label:"Semana 10 · 2 – 6 nov"},
+  {value:"2026-11-09", end:"2026-11-13", label:"Semana 11 · 9 – 13 nov"},
+  {value:"2026-11-16", end:"2026-11-20", label:"Semana 12 · 16 – 20 nov"},
+  {value:"2026-11-23", end:"2026-11-27", label:"Semana 13 · 23 – 27 nov"},
+  {value:"2026-11-30", end:"2026-12-04", label:"Semana 14 · 30 nov – 4 dic"}
+];
+
 let photos = {1:null, 2:null};
 let pasoActual = 1;
 
 (function init(){
-  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  poblarSemanas();
   document.querySelectorAll('input[name=grado]').forEach(r => r.addEventListener('change', poblarActividades));
   document.getElementById('actividad').addEventListener('change', mostrarDescActividad);
   cargarDocenteGuardado();
 })();
+
+function poblarSemanas(){
+  const sel = document.getElementById('semana');
+  const hoy = new Date().toISOString().split('T')[0];
+  let actual = SEMANAS.find(s => hoy <= s.end) || SEMANAS[SEMANAS.length - 1];
+  SEMANAS.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.value;
+    o.textContent = s.label;
+    sel.appendChild(o);
+  });
+  sel.value = actual.value;
+}
 
 function cargarDocenteGuardado(){
   try{
@@ -355,7 +383,7 @@ function validarPaso(n) {
   if(n===1){
     if(!document.getElementById('docente').value.trim()){ alert('Escribe tu apellido paterno y nombre.'); return false; }
     if(!document.getElementById('grupo').value.trim()){ alert('Indica el grupo.'); return false; }
-    if(!document.getElementById('fecha').value){ alert('Indica la fecha de la actividad.'); return false; }
+    if(!document.getElementById('semana').value){ alert('Indica la semana de la actividad.'); return false; }
     if(!document.querySelector('input[name=grado]:checked')){ alert('Selecciona el semestre y ámbito.'); return false; }
   }
   if(n===2){
@@ -393,7 +421,10 @@ async function enviar(){
 
   const docenteNombre=document.getElementById('docente').value.trim();
   const grupo=document.getElementById('grupo').value.trim();
-  const fecha=document.getElementById('fecha').value;
+  const semanaSel=document.getElementById('semana').value;
+  const semanaInfo=SEMANAS.find(s=>s.value===semanaSel);
+  const fecha=semanaInfo.value;
+  const semanaLabel=semanaInfo.label;
   const gradoEl=document.querySelector('input[name=grado]:checked');
   const info=AMBITOS[gradoEl.value];
   const actNum=parseInt(document.getElementById('actividad').value,10);
@@ -407,7 +438,7 @@ async function enviar(){
   if(APPS_SCRIPT_URL==="PEGA_AQUI_LA_URL_DEL_SCRIPT"){
     await new Promise(r=>setTimeout(r,2000));
     guardarDocenteLocal(docenteNombre, grupo, gradoEl.value);
-    mostrarExito({docenteNombre, grupo, info, actNum, actividadTitulo}, fecha);
+    mostrarExito({docenteNombre, grupo, info, actNum, actividadTitulo, semanaLabel}, fecha);
     btn.disabled=false; btn.textContent='Enviar evidencia ✓';
     return;
   }
@@ -418,14 +449,14 @@ async function enviar(){
       docenteNombre, grupo,
       semestre: info.label, ambito: info.ambito,
       actividadNumero: actNum, actividadTitulo,
-      fecha, descripcion,
+      fecha, semanaLabel, descripcion,
       foto1:photos[1], foto2:photos[2]
     };
     const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(payload)});
     const json=await res.json();
     if(json.status==='ok'){
       guardarDocenteLocal(docenteNombre, grupo, gradoEl.value);
-      mostrarExito({docenteNombre, grupo, info, actNum, actividadTitulo}, fecha);
+      mostrarExito({docenteNombre, grupo, info, actNum, actividadTitulo, semanaLabel}, fecha);
     }
     else throw new Error(json.mensaje||'Error desconocido');
   }catch(err){
@@ -445,7 +476,8 @@ function mostrarExito(d,fecha){
     `&nbsp;&nbsp;&nbsp;&nbsp;📁 Actividad ${d.actNum} — ${d.actividadTitulo}<br>`+
     `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼 foto1_${fecha}.jpg<br>`+
     `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼 foto2_${fecha}.jpg<br>`+
-    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📄 evidencia_${fecha}.txt`;
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📄 evidencia_${fecha}.txt<br>`+
+    `&nbsp;&nbsp;&nbsp;&nbsp;${d.semanaLabel}`;
   document.getElementById('success-view').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -456,7 +488,6 @@ function nuevaEvidencia(){
   document.getElementById('descripcion').value='';
   document.getElementById('actividad').innerHTML='<option value="">— Primero selecciona el semestre en el paso 1 —</option>';
   document.getElementById('activity-desc').classList.remove('show');
-  document.getElementById('fecha').value=new Date().toISOString().split('T')[0];
   [1,2].forEach(n=>{const d=document.getElementById('drop'+n);const img=d.querySelector('.preview');if(img)img.remove();document.getElementById('file'+n).value='';d.classList.remove('has-img');});
   document.getElementById('success-view').style.display='none';
   document.getElementById('steps-bar').style.display='flex';

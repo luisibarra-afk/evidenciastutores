@@ -90,17 +90,17 @@ function guardarFormacionSocioemocional(data) {
     `Semestre / ámbito: ${data.semestre} - ${data.ambito}\n` +
     `Docente: ${data.docenteNombre}\n` +
     `Grupo: ${data.grupo}\n` +
-    `Fecha: ${data.fecha}\n` +
+    `Semana: ${data.semanaLabel || data.fecha}\n` +
     `Actividad ${data.actividadNumero}: ${data.actividadTitulo}\n\n` +
     `Notas:\n${data.descripcion || ''}`);
 
   const hoja = getOrCreateSheet('FormacionSocioemocional', [
     'Fecha de registro', 'Docente', 'Grupo', 'Semestre', 'Ámbito', 'N° Actividad', 'Actividad',
-    'Fecha de la actividad', 'Notas', 'Carpeta'
+    'Semana', 'Notas', 'Carpeta'
   ]);
   hoja.appendRow([
     new Date(), data.docenteNombre, data.grupo, data.semestre, data.ambito,
-    data.actividadNumero, data.actividadTitulo, data.fecha, data.descripcion || '', actividadFolder.getUrl()
+    data.actividadNumero, data.actividadTitulo, data.semanaLabel || data.fecha, data.descripcion || '', actividadFolder.getUrl()
   ]);
 
   return { folderUrl: actividadFolder.getUrl() };
